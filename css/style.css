@@ -165,13 +165,6 @@ html, body {
   border-color: #8a0000;
 }
 
-#user-stats-container {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-}
-
 #user-count {
     background: rgba(0, 0, 0, 0.8);
     color: #d1b894;
@@ -183,11 +176,20 @@ html, body {
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
+/* Update this to move the counter to the left side */
+#user-stats-container {
+    position: absolute;
+    top: 20px;
+    left: 20px; /* Changed from right to left */
+    z-index: 1001; /* Higher than map elements */
+}
+
+/* Ensure the popup shows to the right now that the container is on the left */
 #user-list-popup {
     display: none;
     position: absolute;
     top: 100%;
-    right: 0;
+    left: 0; /* Changed from right: 0 to left: 0 */
     background: #111;
     border: 1px solid #8a0000;
     padding: 10px;
