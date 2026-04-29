@@ -1,29 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Night City – RED Map</title>
+    <title>Barovia – Curse of Strahd</title>
 
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css" />
 </head>
-
 <body>
 
     <div id="map"></div>
 
     <div id="coord-box">
-        X: 0 | Y: 0
+        Lat: 0 | Lng: 0
     </div>
-    <button id="gm-toggle">GM Mode: OFF</button>
+    
+    <div id="quest-log" class="hidden">
+        <h3>Quest Log</h3>
+        <ul id="quest-list"></ul>
+    </div>
 
-    <!-- Leaflet JS -->
+    <button id="gm-toggle">Dungeon Master: OFF</button>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="js/map.js"></script>
 </body>
-
 </html>

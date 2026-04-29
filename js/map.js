@@ -1,84 +1,32 @@
-// Image dimensions
-const imageWidth = 3615;
+/**
+ * CURSE OF STRAHD MAP LOGIC
+ * Adapted from Cyberpunk Red Map Tool
+ */
+
+// 1. Image dimensions - Update these to your Barovia map's actual resolution
+const imageWidth = 3615; 
 const imageHeight = 2408;
 
-// Create CRS (simple pixel-based system)
 const map = L.map("map", {
   crs: L.CRS.Simple,
-  minZoom: -2
+  minZoom: -2,
+  maxZoom: 2
 });
 
-// Image bounds
 const bounds = [[0, 0], [imageHeight, imageWidth]];
 
-// Add image overlay
-L.imageOverlay("map/nightcity.png", bounds).addTo(map);
+// Update file path to your new map image
+L.imageOverlay("map/barovia.png", bounds).addTo(map);
 
-// Fit map to image
 map.fitBounds(bounds);
 
-// Load locations from JSON
-fetch("data/locations.json")
-  .then(response => response.json())
-  .then(locations => {
-    locations.forEach(location => {
-      if (!location.discovered) return;
-
-      const marker = L.marker([location.y, location.x]).addTo(map);
-
-      marker.bindPopup(`
-        <strong>${location.name}</strong><br/>
-        Faction: ${location.faction}<br/>
-        ${location.description}
-      `);
-    });
-  })
-  .catch(error => {
-    console.error("Error loading locations:", error);
-  });
-
-  // Coordinate display
-const coordBox = document.getElementById("coord-box");
+// 2. State & Layers
+let gmMode = false;
+const GM_PASSCODE = "ravenloft"; // Updated passcode for the theme
+const markerLayer = L.layerGroup().addTo(map);
 let frozen = false;
 
-// Update on mouse move
-map.on("mousemove", function (e) {
-  if (frozen) return;
-
-  const x = Math.round(e.latlng.lng);
-  const y = Math.round(e.latlng.lat);
-
-  coordBox.textContent = `X: ${x} | Y: ${y}`;
-});
-
-// Click to freeze/unfreeze coordinates
-map.on("click", function () {
-  frozen = !frozen;
-});
-
-let gmMode = false;
-const GM_PASSCODE = "afterlife"; // change this to whatever you want
-
-const gmButton = document.getElementById("gm-toggle");
-
-gmButton.addEventListener("click", () => {
-  if (!gmMode) {
-    const input = prompt("Enter GM passcode:");
-    if (input !== GM_PASSCODE) {
-      alert("Access denied.");
-      return;
-    }
-  }
-
-  gmMode = !gmMode;
-  gmButton.textContent = gmMode ? "GM Mode: ON" : "GM Mode: OFF";
-  gmButton.classList.toggle("active");
-
-  loadLocations();
-});
-
-let markerLayer = L.layerGroup().addTo(map);
-
+// 3. Marker Logic
 function loadLocations() {
   markerLayer.clearLayers();
 
@@ -86,21 +34,58 @@ function loadLocations() {
     .then(response => response.json())
     .then(locations => {
       locations.forEach(location => {
+        // If not discovered and not in GM mode, stay hidden
         if (!location.discovered && !gmMode) return;
 
+        // Custom Icon logic could go here (e.g., skulls for combat, house for towns)
         const marker = L.marker([location.y, location.x]);
 
+        // Gothic themed popup content
+        const status = !location.discovered ? "<br/><em style='color: #888;'>[UNEXPLORED]</em>" : "";
+        const factionInfo = location.faction ? `<strong>Affiliation:</strong> ${location.faction}<br/>` : "";
+
         marker.bindPopup(`
-          <strong>${location.name}</strong><br/>
-          Faction: ${location.faction}<br/>
-          ${location.description}
-          ${!location.discovered ? "<br/><em>UNDISCOVERED</em>" : ""}
+          <div class="gothic-popup">
+            <h2 style="margin: 0 0 5px 0; border-bottom: 1px solid #5e0000;">${location.name}</h2>
+            ${factionInfo}
+            <p>${location.description}</p>
+            ${status}
+          </div>
         `);
 
         markerLayer.addLayer(marker);
       });
-    });
+    })
+    .catch(err => console.error("Error loading Barovia data:", err));
 }
+
+// 4. UI Controls
+const coordBox = document.getElementById("coord-box");
+
+map.on("mousemove", function (e) {
+  if (frozen) return;
+  const x = Math.round(e.latlng.lng);
+  const y = Math.round(e.latlng.lat);
+  coordBox.textContent = `X: ${x} | Y: ${y}`;
+});
+
+map.on("click", () => { frozen = !frozen; });
+
+const gmButton = document.getElementById("gm-toggle");
+gmButton.addEventListener("click", () => {
+  if (!gmMode) {
+    const input = prompt("Speak the password to reveal the mists:");
+    if (input !== GM_PASSCODE) {
+      alert("The mists do not part for you.");
+      return;
+    }
+  }
+
+  gmMode = !gmMode;
+  gmButton.textContent = gmMode ? "DM Mode: ACTIVE" : "DM Mode: OFF";
+  gmButton.classList.toggle("active");
+  loadLocations();
+});
 
 // Initial load
 loadLocations();

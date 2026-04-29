@@ -1,34 +1,18 @@
 [
-    {
-        "name": "The Broken Filter",
-        "x": 1973,
-        "y": 2016,
-        "faction": "Independent",
-        "description": "A dimly lit, common hangout for fixers and low-level mercs. This is where Rhea Knox usually meets her mercs.",
-        "discovered": true
-    },
-    {
-        "name": "Elysium Galleria",
-        "x": 1230,
-        "y": 1424,
-        "faction": "Biotechnica",
-        "description": "High-end corporate shopping mall currently undergoing repairs after recent riot damage. Heavy security presence and discreet corporate oversight remain in place.",
-        "discovered": true
-    },
-    {
-        "name": "Radio Tower HW01",
-        "x": 3060,
-        "y": 6,
-        "faction": "Aldecaldos",
-        "description": "Old wasteland radio tower running on scavenged tech, accessible only through Aldecaldo-controlled territory. Unauthorized broadcasts risk attracting corporate response.",
-        "discovered": true
-    },
-    {
-        "name": "Temporary Militech Processing Facility",
-        "x": 1211,
-        "y": 888,
-        "faction": "Militech",
-        "description": "Repurposed warehouse compound on the outskirts of Night City, fortified with razor wire, floodlights, and controlled gate access. Used for temporary detainment and interrogation operations.",
-        "discovered": true
-    }
+  {
+    "name": "Village of Barovia",
+    "x": 2540,
+    "y": 1200,
+    "faction": "Civilians",
+    "description": "A weary village living in the shadow of Ravenloft. The air is thick with the smell of old hearths and despair.",
+    "discovered": true
+  },
+  {
+    "name": "Old Bonegrinder",
+    "x": 1800,
+    "y": 1450,
+    "faction": "The Covens",
+    "description": "A dilapidated windmill used to grind 'dream pastries'. Beware the smell of burnt sugar.",
+    "discovered": false
+  }
 ]
