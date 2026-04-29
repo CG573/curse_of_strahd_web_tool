@@ -8,11 +8,11 @@ const SUPABASE_KEY = 'sb_publishable_0r73bZnEHjNS4MQ7sZlCxg_Fx8QFaU8';
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // 2. Map Setup
-const imageWidth = 7500;
-const imageHeight = 4813;
+const imageWidth = 1008;
+const imageHeight = 1279;
 const map = L.map("map", { crs: L.CRS.Simple, minZoom: -2, maxZoom: 2 });
 const bounds = [[0, 0], [imageHeight, imageWidth]];
-L.imageOverlay("map/barovia.png", bounds).addTo(map);
+L.imageOverlay("map/village_barovia.png", bounds).addTo(map);
 map.fitBounds(bounds);
 
 // 3. State
@@ -26,7 +26,7 @@ let frozen = false;
 async function loadLocations() {
   markerLayer.clearLayers();
   
-  const { data: locations, error } = await _supabase.from('locations').select('*').eq('parent_map', 'barovia');
+  const { data: locations, error } = await _supabase.from('locations').select('*').eq('parent_map', 'village_barovia');
   if (error) return console.error("Error loading locations:", error);
 
   locations.forEach(loc => {
