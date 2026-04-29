@@ -26,7 +26,7 @@ let frozen = false;
 async function loadLocations() {
   markerLayer.clearLayers();
   
-  const { data: locations, error } = await _supabase.from('locations').select('*').eq('parent_map', 'village_barovia');
+  const { data: locations, error } = await _supabase.from('locations').select('*').eq('parent_map', 'vallaki');
   if (error) return console.error("Error loading locations:", error);
 
   locations.forEach(loc => {
