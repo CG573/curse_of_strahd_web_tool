@@ -20,6 +20,17 @@
 
     <div id="coord-box">X: 0 | Y: 0</div>
 
+    <div id="user-stats-container">
+        <div id="user-count">
+            <i class="fa-solid fa-ghost"></i> Souls in the Mists: <span id="count-num">0</span>
+            <div id="user-list-popup">
+                <strong>Active Travelers:</strong>
+                <hr style="border: 0; border-top: 1px dashed #5e0000; margin: 5px 0;">
+                <div id="names-list">Loading...</div>
+            </div>
+        </div>
+    </div>
+
     <div id="controls">
         <button id="gm-toggle">Dungeon Master: OFF</button>
         <button id="hide-toggle">Hide Markers</button>
@@ -27,7 +38,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="js/village_barovia.js"></script> </body>
+    <script src="js/village_barovia.js"></script>
 </body>
 
 </html>

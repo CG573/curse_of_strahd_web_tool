@@ -154,3 +154,44 @@ _supabase.channel('db-changes').on('postgres_changes', { event: '*', schema: 'pu
 }).subscribe();
 
 loadLocations();
+
+// --- PRESENCE LOGIC ---
+
+// 1. Get name from storage or prompt
+let travelerName = sessionStorage.getItem('dnd_name');
+
+if (!travelerName) {
+    travelerName = prompt("State your name, traveler, that the mists may know you:") || "Nameless Soul";
+    sessionStorage.setItem('dnd_name', travelerName);
+}
+
+// 2. Initialize the Presence Channel
+const presenceChannel = _supabase.channel('online-players', {
+  config: { presence: { key: 'user' } }
+});
+
+presenceChannel
+  .on('presence', { event: 'sync' }, () => {
+    const state = presenceChannel.presenceState();
+    const allUsers = Object.values(state).flat();
+    
+    // Update counter
+    const countEl = document.getElementById("count-num");
+    if(countEl) countEl.textContent = allUsers.length;
+    
+    // Update hover list
+    const listEl = document.getElementById("names-list");
+    if(listEl) {
+        listEl.innerHTML = allUsers
+          .map(u => `<div style="margin-bottom:2px;">• ${u.name}</div>`)
+          .join('');
+    }
+  })
+  .subscribe(async (status) => {
+    if (status === 'SUBSCRIBED') {
+      await presenceChannel.track({
+        name: travelerName,
+        online_at: new Date().toISOString()
+      });
+    }
+  });

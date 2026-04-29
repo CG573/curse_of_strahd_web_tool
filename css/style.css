@@ -164,3 +164,43 @@ html, body {
   color: #8a0000;
   border-color: #8a0000;
 }
+
+#user-stats-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+#user-count {
+    background: rgba(0, 0, 0, 0.8);
+    color: #d1b894;
+    padding: 8px 12px;
+    border: 1px solid #8a0000;
+    font-family: 'Crimson Text', serif;
+    cursor: help;
+    position: relative;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+#user-list-popup {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #111;
+    border: 1px solid #8a0000;
+    padding: 10px;
+    min-width: 150px;
+    margin-top: 5px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.8);
+}
+
+#user-count:hover #user-list-popup {
+    display: block;
+}
+
+#names-list {
+    font-size: 14px;
+    line-height: 1.4;
+}
