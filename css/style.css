@@ -16,27 +16,34 @@ html, body {
   background: #000 !important;
 }
 
-/* Gothic Popup Styling */
+/* Gothic Popup Styling - Obsidian Version */
 .leaflet-popup-content-wrapper {
-  background: #2a0a0a; /* Deep wine red */
-  color: #d1b894; /* Aged parchment color */
-  border: 2px solid #5e0000;
-  border-radius: 0px; /* Sharp edges look more gothic */
-  box-shadow: 0 0 15px rgba(0,0,0,0.8);
+  background: #000000 !important; /* Pure black */
+  color: #d1b894; /* Aged parchment text */
+  border: 1px solid #5e0000;
+  border-radius: 0px; 
+  box-shadow: 0 0 20px rgba(0,0,0,1);
 }
 
 .leaflet-popup-tip {
-  background: #2a0a0a;
+  background: #000000 !important;
+  border: 1px solid #5e0000;
+}
+
+.gothic-popup h2 {
+    color: #8a0000; /* Blood red headers */
+    border-bottom: 1px solid #2a0a0a;
+    padding-bottom: 5px;
 }
 
 #coord-box {
   position: absolute;
   bottom: 20px;
   left: 20px;
-  background: rgba(40, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.8);
   color: #d1b894;
   padding: 10px 15px;
-  font-size: 12px;
+  font-size: 16px;
   border: 1px solid #5e0000;
   z-index: 1000;
   text-transform: uppercase;
@@ -61,4 +68,99 @@ html, body {
   background: #8a0000;
   color: #000;
   box-shadow: 0 0 10px #ff0000;
+}
+
+.gothic-popup-admin {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed #5e0000;
+}
+
+.gothic-popup-admin label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-family: monospace;
+    font-size: 11px;
+    color: #8a0000;
+    transition: 0.2s;
+}
+
+.gothic-popup-admin label:hover {
+    color: #d1b894;
+}
+
+.gothic-popup-admin input[type="checkbox"] {
+    accent-color: #8a0000;
+    cursor: pointer;
+    transform: scale(1.2);
+}
+
+#coord-box, #gm-toggle {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Visible markers stay solid */
+.marker-discovered {
+    stroke-width: 2;
+    stroke: #000;
+}
+
+/* Hidden markers (DM only) become hollow rings */
+.marker-hidden {
+    stroke-width: 3;
+    fill-opacity: 0.1 !important;
+}
+
+.dm-marker-hidden {
+    color: #8a0000;
+    font-size: 24px;
+    filter: drop-shadow(0 0 5px #ff0000);
+    opacity: 1;
+}
+
+.player-marker {
+    font-size: 22px;
+    filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.8));
+    transition: transform 0.2s;
+}
+
+.player-marker:hover {
+    transform: scale(1.2);
+}
+
+/* Remove default Leaflet white square for custom icons */
+.leaflet-div-icon {
+    background: transparent !important;
+    border: none !important;
+}
+
+/* Ensure icons are centered */
+.custom-div-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#hide-toggle {
+  position: absolute;
+  top: 70px; /* Positioned below the GM toggle */
+  right: 20px;
+  padding: 10px 20px;
+  background: #1a1a1a;
+  color: #d1b894;
+  border: 1px solid #5e0000;
+  cursor: pointer;
+  z-index: 1000;
+  font-family: 'Crimson Text', serif;
+  text-transform: uppercase;
+  transition: 0.3s;
+}
+
+#hide-toggle.active {
+  background: #2a0a0a;
+  color: #8a0000;
+  border-color: #8a0000;
 }

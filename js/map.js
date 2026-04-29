@@ -1,91 +1,180 @@
 /**
- * CURSE OF STRAHD MAP LOGIC
- * Adapted from Cyberpunk Red Map Tool
+ * CURSE OF STRAHD MAP LOGIC - MASTER VERSION
  */
 
-// 1. Image dimensions - Update these to your Barovia map's actual resolution
-const imageWidth = 3615; 
-const imageHeight = 2408;
+// 1. Supabase Initialization
+const SUPABASE_URL = 'https://czxdpdutrtrdgfbifupy.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_0r73bZnEHjNS4MQ7sZlCxg_Fx8QFaU8';
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const map = L.map("map", {
-  crs: L.CRS.Simple,
-  minZoom: -2,
-  maxZoom: 2
-});
-
+// 2. Map Setup
+const imageWidth = 7500;
+const imageHeight = 4813;
+const map = L.map("map", { crs: L.CRS.Simple, minZoom: -2, maxZoom: 2 });
 const bounds = [[0, 0], [imageHeight, imageWidth]];
-
-// Update file path to your new map image
 L.imageOverlay("map/barovia.png", bounds).addTo(map);
-
 map.fitBounds(bounds);
 
-// 2. State & Layers
+// 3. State
 let gmMode = false;
-const GM_PASSCODE = "ravenloft"; // Updated passcode for the theme
+let markersVisible = true;
+const GM_PASSCODE = "ravenloft";
 const markerLayer = L.layerGroup().addTo(map);
 let frozen = false;
 
-// 3. Marker Logic
-function loadLocations() {
+// 4. Load Locations
+async function loadLocations() {
+  // We clear the layer, but we don't remove it from the map
   markerLayer.clearLayers();
+  
+  const { data: locations, error } = await _supabase.from('locations').select('*');
+  if (error) return console.error("Error loading locations:", error);
 
-  fetch("data/locations.json")
-    .then(response => response.json())
-    .then(locations => {
-      locations.forEach(location => {
-        // If not discovered and not in GM mode, stay hidden
-        if (!location.discovered && !gmMode) return;
+  locations.forEach(loc => {
+    // Only show discovered locations to players; show all to DM
+    if (!loc.discovered && !gmMode) return;
 
-        // Custom Icon logic could go here (e.g., skulls for combat, house for towns)
-        const marker = L.marker([location.y, location.x]);
+    const activeColor = loc.color || '#3388ff';
+    const activeIcon = loc.icon || 'fa-location-dot';
 
-        // Gothic themed popup content
-        const status = !location.discovered ? "<br/><em style='color: #888;'>[UNEXPLORED]</em>" : "";
-        const factionInfo = location.faction ? `<strong>Affiliation:</strong> ${location.faction}<br/>` : "";
+    let iconHtml = '';
+    if (!loc.discovered && gmMode) {
+      iconHtml = '<i class="fa-solid fa-eye-slash dm-marker-hidden"></i>';
+    } else {
+      iconHtml = `<i class="fa-solid ${activeIcon} player-marker" style="color: ${activeColor};"></i>`;
+    }
 
-        marker.bindPopup(`
-          <div class="gothic-popup">
-            <h2 style="margin: 0 0 5px 0; border-bottom: 1px solid #5e0000;">${location.name}</h2>
-            ${factionInfo}
-            <p>${location.description}</p>
-            ${status}
+    const marker = L.marker([loc.y, loc.x], {
+      icon: L.divIcon({
+        html: iconHtml,
+        className: 'custom-div-icon',
+        iconSize: [24, 24],
+        iconAnchor: [12, 12]
+      })
+    });
+
+    marker.locationId = loc.id;
+    marker.currentColor = activeColor;
+    marker.currentIcon = activeIcon;
+
+    let content = `
+      <div class="gothic-popup">
+          <h2 style="margin:0;">${loc.name}</h2>
+          <p style="font-style: italic; margin: 5px 0;">${loc.description}</p>
+          
+          <div class="color-picker" style="margin-top:10px; display:flex; gap:5px; align-items:center;">
+              <span style="font-size:10px; color:#d1b894;">INK:</span>
+              ${['#3388ff', '#8a0000', '#2e7d32', '#f9a825', '#d1b894'].map(c =>
+                `<div onclick="updateColor(${loc.id}, '${c}')" 
+                      style="width:16px; height:16px; background:${c}; cursor:pointer; border:1px solid #000; ${loc.color === c ? 'outline: 2px solid #d1b894;' : ''}">
+                 </div>`).join('')}
           </div>
-        `);
+    `;
 
-        markerLayer.addLayer(marker);
-      });
-    })
-    .catch(err => console.error("Error loading Barovia data:", err));
+    if (gmMode) {
+      content += `
+          <div class="gothic-popup-admin" style="margin-top:10px; padding-top:10px; border-top:1px dashed #5e0000;">
+              <div style="margin-bottom:10px;">
+                  <span style="font-size:10px; color:#d1b894; display:block; margin-bottom:4px;">ICON CLASS (FontAwesome):</span>
+                  <input type="text" 
+                         value="${activeIcon}" 
+                         onchange="updateIcon(${loc.id}, this.value)"
+                         style="width:100%; background:#111; color:#8a0000; border:1px solid #5e0000; font-family:monospace; font-size:11px; padding:4px;">
+              </div>
+              <label>
+                  <input type="checkbox" ${loc.discovered ? 'checked' : ''} onchange="toggleLocation(${loc.id}, this.checked)">
+                  ${!loc.discovered ? 'PART THE MISTS' : 'VISIBLE TO PLAYERS'}
+              </label>
+          </div>
+      `;
+    }
+    content += `</div>`;
+    marker.bindPopup(content);
+    markerLayer.addLayer(marker);
+  });
 }
 
-// 4. UI Controls
-const coordBox = document.getElementById("coord-box");
-
-map.on("mousemove", function (e) {
-  if (frozen) return;
-  const x = Math.round(e.latlng.lng);
-  const y = Math.round(e.latlng.lat);
-  coordBox.textContent = `X: ${x} | Y: ${y}`;
-});
-
-map.on("click", () => { frozen = !frozen; });
-
-const gmButton = document.getElementById("gm-toggle");
-gmButton.addEventListener("click", () => {
-  if (!gmMode) {
-    const input = prompt("Speak the password to reveal the mists:");
-    if (input !== GM_PASSCODE) {
-      alert("The mists do not part for you.");
-      return;
-    }
+// 5. Database Update Functions
+async function toggleLocation(id, isChecked) {
+  window.isUpdatingLocally = true;
+  const { error } = await _supabase.from('locations').update({ discovered: isChecked }).eq('id', id);
+  if (error) { 
+    alert("The mists resist your will."); 
+    window.isUpdatingLocally = false; 
+    return; 
   }
 
+  // Update marker visuals without closing popup
+  markerLayer.eachLayer(m => {
+    if (m.locationId === id) {
+      const iconHtml = isChecked
+        ? `<i class="fa-solid ${m.currentIcon} player-marker" style="color: ${m.currentColor};"></i>`
+        : '<i class="fa-solid fa-eye-slash dm-marker-hidden"></i>';
+
+      m.setIcon(L.divIcon({ html: iconHtml, className: 'custom-div-icon', iconSize: [24, 24], iconAnchor: [12, 12] }));
+
+      const popup = m.getPopup();
+      if (popup) {
+        let content = popup.getContent();
+        content = isChecked
+          ? content.replace('PART THE MISTS', 'VISIBLE TO PLAYERS').replace('type="checkbox"', 'type="checkbox" checked')
+          : content.replace('VISIBLE TO PLAYERS', 'PART THE MISTS').replace('type="checkbox" checked', 'type="checkbox"');
+        m.setPopupContent(content);
+      }
+    }
+  });
+}
+
+async function updateColor(id, newColor) {
+  window.isUpdatingLocally = true;
+  await _supabase.from('locations').update({ color: newColor }).eq('id', id);
+  loadLocations(); 
+}
+
+async function updateIcon(id, newIcon) {
+  window.isUpdatingLocally = true;
+  await _supabase.from('locations').update({ icon: newIcon }).eq('id', id);
+  loadLocations(); 
+}
+
+// 6. UI & Interactions
+const coordBox = document.getElementById("coord-box");
+map.on("mousemove", (e) => {
+  if (!frozen) coordBox.textContent = `X: ${Math.round(e.latlng.lng)} | Y: ${Math.round(e.latlng.lat)}`;
+});
+map.on("click", () => frozen = !frozen);
+
+// DM Toggle
+document.getElementById("gm-toggle").addEventListener("click", () => {
+  if (!gmMode && prompt("Password:") !== GM_PASSCODE) return alert("The mists do not recognize you.");
   gmMode = !gmMode;
-  gmButton.textContent = gmMode ? "DM Mode: ACTIVE" : "DM Mode: OFF";
-  gmButton.classList.toggle("active");
+  const btn = document.getElementById("gm-toggle");
+  btn.textContent = gmMode ? "DM Mode: ACTIVE" : "DM Mode: OFF";
+  btn.classList.toggle("active");
   loadLocations();
 });
 
-// Initial load
+// Hide/Show Markers Toggle
+document.getElementById("hide-toggle").addEventListener("click", () => {
+  markersVisible = !markersVisible;
+  const btn = document.getElementById("hide-toggle");
+  
+  if (markersVisible) {
+    map.addLayer(markerLayer);
+    btn.textContent = "Hide Markers";
+    btn.classList.remove("active");
+  } else {
+    map.removeLayer(markerLayer);
+    btn.textContent = "Show Markers";
+    btn.classList.add("active");
+  }
+});
+
+// 7. Realtime Listener
+_supabase.channel('db-changes').on('postgres_changes', { event: '*', schema: 'public', table: 'locations' }, () => {
+  if (!window.isUpdatingLocally) loadLocations();
+  window.isUpdatingLocally = false;
+}).subscribe();
+
+// Initial Run
 loadLocations();

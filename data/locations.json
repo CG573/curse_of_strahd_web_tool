@@ -1,9 +1,8 @@
 [
   {
     "name": "Village of Barovia",
-    "x": 2540,
-    "y": 1200,
-    "faction": "Civilians",
+    "x": 2835,
+    "y": 942,
     "description": "A weary village living in the shadow of Ravenloft. The air is thick with the smell of old hearths and despair.",
     "discovered": true
   },
@@ -11,7 +10,6 @@
     "name": "Old Bonegrinder",
     "x": 1800,
     "y": 1450,
-    "faction": "The Covens",
     "description": "A dilapidated windmill used to grind 'dream pastries'. Beware the smell of burnt sugar.",
     "discovered": false
   }
