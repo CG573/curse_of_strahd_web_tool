@@ -1,0 +1,62 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: #050510;
+  font-family: Arial, sans-serif;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+  background-color: #050510;
+}
+
+/* Force leaflet container background */
+.leaflet-container {
+  background: #000 !important;
+}
+
+/* Popup styling */
+.leaflet-popup-content-wrapper {
+  background: #111;
+  color: #b32323;
+  border: 1px solid #b32323;
+}
+
+.leaflet-popup-tip {
+  background: #111;
+}
+
+#coord-box {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  background: rgba(10, 10, 20, 0.9);
+  color: #00ffcc;
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #00ffcc;
+  border-radius: 4px;
+  z-index: 1000;
+  font-family: monospace;
+}
+
+#gm-toggle {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  padding: 8px 12px;
+  background: rgba(20, 20, 30, 0.95);
+  color: #ff3c3c;
+  border: 1px solid #ff3c3c;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: monospace;
+  z-index: 1000;
+}
+
+#gm-toggle.active {
+  color: #00ffcc;
+  border-color: #00ffcc;
+}
